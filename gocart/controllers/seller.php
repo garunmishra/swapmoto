@@ -1,7 +1,9 @@
 <?php
 
+/*
+*
+*/
 class seller extends Front_Controller {
-
 	function __construct()
 	{
 		parent::__construct();
@@ -9,9 +11,11 @@ class seller extends Front_Controller {
 		//make sure we're not always behind ssl
 		remove_ssl();
 	}
-	public function index(){
-		
+	public function index(){		
 	}
+	/*
+	*
+	*/
 	public function seller_listed_items($id, $order_by = "name", $sort_order = "ASC", $code = 0, $page = 0, $rows = 15){
 		$base_url	= $this->uri->segment_array();
 		$data['base_url']	= $base_url;
@@ -23,3 +27,7 @@ class seller extends Front_Controller {
        $this->load->view('category', $data);
 	}
 }
+
+
+
+?>

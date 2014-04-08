@@ -9,6 +9,8 @@ if(!file_exists(dirname($_SERVER['SCRIPT_FILENAME']).'/gocart/config/gocart.php'
 	die;
 }
 
+
+
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
