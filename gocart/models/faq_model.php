@@ -57,5 +57,9 @@ Class faq_model extends CI_Model
 	return $this->db->query('select pm.timestamp, pm.message, users.id as userid, users.firstname username from prefix_faq pm, prefix_customers users where pm.id="'.$id.'" and users.id=pm.user1 order by pm.id2')->result();
 	}
 	
-	
+	public function save_feedback($data){
+			$this->db->insert('feedback', $data);
+			$id	= $this->db->insert_id();
+			return $id;
+	}
 }

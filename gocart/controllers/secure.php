@@ -76,6 +76,9 @@ class Secure extends Front_Controller {
 				{
 					$this->session->set_flashdata('redirect', $redirect);
 					$this->session->set_flashdata('error', lang('login_failed'));
+					$this->common_model->setMessage(3,lang('login_failed'));
+
+
 					
 					redirect('secure/login');
 				}
@@ -153,12 +156,12 @@ class Secure extends Front_Controller {
 			{
 				$data['redirect']	= $this->input->post('redirect');				
 			}
-			
 			// load other page content 
 			//$this->load->model('banner_model');
 			$this->load->helper('directory');		
 			$data['categories']	= $this->Category_model->get_categories_tierd(0);			
-			$data['error'] = validation_errors();			
+			$data['error'] = validation_errors();		
+			$this->common_model->setMessage(3,$data['error']);	
 			$this->load->view('register', $data);
 		}
 		else
@@ -203,7 +206,8 @@ class Secure extends Front_Controller {
 			$this->email->subject($row['subject']);
 			$this->email->message(html_entity_decode($row['content']));			
 			$this->email->send();			
-			$this->session->set_flashdata('message', sprintf( lang('registration_thanks'), $this->input->post('firstname') ) );			
+			$this->session->set_flashdata('message', sprintf( lang('registration_thanks'), $this->input->post('firstname') ) );	
+			$this->common_model->setMessage(1,"Thanks for registering ".$this->input->post('firstname'));		
 			//lets automatically log them in
 			$this->Customer_model->login($save['email'], $this->input->post('confirm'));			
 			//we're just going to make this secure regardless, because we don't know if they are
@@ -409,6 +413,8 @@ class Secure extends Front_Controller {
 		$data['fixed_quantity']		= '';
 		$data['quantity']			= '';
 		$data['enabled']			= '';
+		$data['condition']			= '';
+		$data['company_id'] 		='';
 		$data['related_products']	= array();
 		$data['product_categories']	= array();
 		$data['images']				= array();
@@ -564,10 +570,13 @@ class Secure extends Front_Controller {
 				
 				$route['slug']	= $slug;	
 				$route_id	= $this->Routes_model->save($route);
+				$save['sku'] = $this->randomNumber(16); 
+				$save['taxable']			= 0;
+				$save['enabled']			= 1;
+			
 			}
 			$save['user_id']			= $customer['id'];
 			$save['id']					= $id;
-			$save['sku']				= $this->input->post('sku');
 			$save['name']				= $this->input->post('name');
 			$save['seo_title']			= $this->input->post('seo_title');
 			$save['meta']				= $this->input->post('meta');
@@ -580,8 +589,7 @@ class Secure extends Front_Controller {
 			$save['fixed_quantity']		= $this->input->post('fixed_quantity');
 			$save['quantity']			= $this->input->post('quantity');
 			$save['shippable']			= $this->input->post('shippable');
-			$save['taxable']			= $this->input->post('taxable');
-			$save['enabled']			= $this->input->post('enabled');
+			
 			$save['condition'] 			= $this->input->post('condition');
 			$post_images				= $this->input->post('images');
 			
@@ -659,6 +667,61 @@ class Secure extends Front_Controller {
 			
 			$this->Routes_model->save($route);
 //			
+
+// set message template message
+			if($id){
+			$res = $this->db->where('id', '12')->get('canned_messages');
+			$row = $res->row_array();			
+			// set replacement values for subject & body			
+			// {customer_name}
+			$row['subject'] = str_replace('{customer_name}', $customer['firstname'].' '. $customer['lastname'], $row['subject']);
+			$row['content'] = str_replace('{customer_name}', $customer['firstname'].' '. $customer['lastname'], $row['content']);			
+			// {url}
+			$row['subject'] = str_replace('{url}', $this->config->item('base_url'), $row['subject']);
+			$row['content'] = str_replace('{url}', $this->config->item('base_url'), $row['content']);			
+			// {site_name}
+			$row['subject'] = str_replace('{site_name}', $this->config->item('company_name'), $row['subject']);
+			$row['content'] = str_replace('{site_name}', $this->config->item('company_name'), $row['content']);
+			$row['content'] = str_replace('{product_name}', "<b>".$product->name."</b>", $row['content']);	
+					
+			$this->load->library('email');			
+			$config['mailtype'] = 'html';			
+			$this->email->initialize($config);	
+			$this->email->from($this->config->item('email'), $this->config->item('company_name'));
+			$this->email->to($customer['email']);
+			$this->email->bcc($this->config->item('email'));
+			$this->email->subject($row['subject']);
+			$this->email->message(html_entity_decode($row['content']));			
+			$this->email->send();	
+			// send mail to admin for approval notification	
+			
+			$res = $this->db->where('id', '13')->get('canned_messages');
+			$row = $res->row_array();			
+			// set replacement values for subject & body			
+			// {customer_name}
+			$row['subject'] = str_replace('{customer_name}', $customer['firstname'].' '. $customer['lastname'], $row['subject']);
+			$row['content'] = str_replace('{customer_name}', $customer['firstname'].' '. $customer['lastname'], $row['content']);			
+			// {url}
+			$row['subject'] = str_replace('{url}', $this->config->item('base_url'), $row['subject']);
+			$row['content'] = str_replace('{url}', $this->config->item('base_url'), $row['content']);			
+			// {site_name}
+			$row['subject'] = str_replace('{site_name}', $this->config->item('company_name'), $row['subject']);
+			$row['content'] = str_replace('{site_name}', $this->config->item('company_name'), $row['content']);
+			$row['content'] = str_replace('{product_name}', "<b>".$product->name."</b>", $row['content']);	
+					
+			$this->load->library('email');			
+			$config['mailtype'] = 'html';			
+			$this->email->initialize($config);	
+			$this->email->from($this->config->item('email'), $this->config->item('company_name'));
+			$this->email->to($customer['email']);
+			$this->email->bcc($this->config->item('email'));
+			$this->email->subject($row['subject']);
+			$this->email->message(html_entity_decode($row['content']));			
+			$this->email->send();	
+			
+			}
+
+// end template sending
 			//$this->session->set_flashdata('message', lang('message_saved_product'));
 			$this->common_model->setMessage(1,lang('message_saved_product'));
 				//go back to the product list
@@ -802,4 +865,34 @@ class Secure extends Front_Controller {
 		
 		redirect('/myaccount/list_item');
 	}
+	
+	public  function randomNumber($length) {
+    $result = '';
+    for($i = 0; $i < $length; $i++) {
+        $result .= mt_rand(0, 9);
+    }
+
+    return $result;
+}
+
+public function get_model_list(){
+$id = ($this->input->post('id')==''?$id:$this->input->post('id'));
+if($id!=''){
+$subcatlist =  $this->Product_model->get_model_list($id);
+					$str = null;
+					if(count($subcatlist)>0){
+						$str = '<select name="modelid" id="modelid"><option value="">Select model</option>';
+					foreach($subcatlist as $subcatval):
+					$str.="<option value=".$subcatval->model_id.">".$subcatval->model_name."</option>";
+					endforeach;
+					$str.= "</select>";
+					echo $str;
+					}
+					}
+
+}
+
+public function open(){
+echo "<b>Hello</b>";	
+}
 }

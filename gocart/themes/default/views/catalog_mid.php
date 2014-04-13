@@ -1,4 +1,10 @@
-<h1><?php echo $page_title; ?></h1>
+<a href="<?php echo site_url($menu['category_info']->slug);?>"><?php echo $menu['category_info']->name; ?></a> 
+<?php if(isset($menu['sub_category_info'])){
+?>
+>> <a href="<?php echo site_url($menu['sub_category_info']->slug);?>"><?php echo $menu['sub_category_info']->name; ?></a>
+<?php } ?>
+
+
 <?php if(!empty($category->description)): ?>
 	<!--<div class="row">
 		<div class="span12"><?php echo $category->description; ?></div>
@@ -45,7 +51,8 @@
 							<?php echo $photo; ?>
 						</a>
 							<?php if($product->excerpt != ''): ?>
-                                                        <div class="sub-title"><?php echo $product->name; ?></div>
+                                                        <div class="sub-title">
+														<?php echo $this->common_model->word_crop($product->name,'28','..');?></div>
                                                         <?php endif; ?>
 							<div class="info">
                                                             <span class="condition">Condition: Excellent</span>

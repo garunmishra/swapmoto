@@ -77,7 +77,7 @@ $(document).ready(function(){
 			
 			<?php $admin_url = site_url($this->config->item('admin_folder')).'/';?>
 			
-			<a class="brand" href="<?php echo $admin_url;?>">GoCart</a>
+			<a class="brand" href="<?php echo $admin_url;?>">SwapMoto</a>
 			
 			<div class="nav-collapse">
 				<ul class="nav">

@@ -1,8 +1,13 @@
-<div class="container mar-top">
+<div class="span9">
+<?php echo $this->common_model->getMessage(); ?>
+<div class="page-header">
+
   <h3>Unread Messages(<?php echo count($inbox['unread_result']); ?>):</h3>
   	
        
-        	<table>
+
+        	<table class="table">
+
 	<tr>
     	<th class="title_cell">Title</th>
         <th>Nb. Replies</th>
@@ -15,7 +20,7 @@
 	   <tr>
     	<td class="left"><a href="<?php echo base_url('/myaccount/view_message/'.$unread_inbox->id); ?>"><?php echo htmlentities($unread_inbox->title, ENT_QUOTES, 'UTF-8'); ?></a></td>
     	<td><?php echo $unread_inbox->reps-1; ?></td>
-    	<td><a href="<?php echo base_url('/myaccount/viewmsg'.$unread_inbox->userid); ?>"><?php echo htmlentities($unread_inbox->firstname, ENT_QUOTES, 'UTF-8'); ?></a></td>
+    	<td><a style="cursor:default"><?php echo htmlentities($unread_inbox->firstname, ENT_QUOTES, 'UTF-8'); ?></a></td>
     	<td><?php echo date('Y/m/d H:i:s' ,$unread_inbox->timestamp); ?></td>
     </tr>
 	   
@@ -30,9 +35,9 @@
 }
 ?>
  </table>
-   <h3>Read Messages(<?php echo count($inbox['read_result']); ?>):</h3>
-
- <table>
+  <div class="page-header"> <h3>Read Messages(<?php echo count($inbox['read_result']); ?>):</h3>
+</div>
+ <table class="table">
 	<tr>
     	<th class="title_cell">Title</th>
         <th>Nb. Replies</th>
@@ -46,7 +51,7 @@
 	   <tr>
     	<td class="left"><a href="<?php echo base_url('/myaccount/view_message/'.$read_inbox->id); ?>"><?php echo htmlentities($read_inbox->title, ENT_QUOTES, 'UTF-8'); ?></a></td>
     	<td><?php echo $read_inbox->reps-1; ?></td>
-    	<td><a href="profile.php?id=<?php echo $read_inbox->userid; ?>"><?php echo htmlentities($read_inbox->firstname, ENT_QUOTES, 'UTF-8'); ?></a></td>
+    	<td><?php echo htmlentities($read_inbox->firstname, ENT_QUOTES, 'UTF-8'); ?></td>
     	<td><?php echo date('Y/m/d H:i:s' ,$read_inbox->timestamp); ?></td>
     </tr>
 	   
@@ -63,7 +68,10 @@
  </table>
         
     
-    </div>
+
+    </div></div></div>
+
+
 
 	
 

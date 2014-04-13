@@ -11,17 +11,20 @@
     <meta name="author" content="">
     <?php endif; ?>
 
-    <?php echo theme_css('bootstrap.css', true);?>
+	<?php echo theme_css('bootstrap.css', true);?>
+    <?php echo theme_css('bootstrap-responsive.css', true);?>
+    <?php echo theme_css('style.css', true);?>
+    
+    <?php echo theme_js('jquery.js', true);?>
+    <?php echo theme_js('bootstrap.min.js', true);?>
+    <?php echo theme_js('squard.js', true);?>
+    <?php echo theme_js('equal_heights.js', true);?>
+    
+    <?php //echo theme_js('bootstrap.js', true);?>
+    <?php //echo theme_js('jquery_1.7.1_js.js', true);?>
+    <?php echo theme_js('common.js', true);?>
+    <?php echo theme_js('jquery.form.js', true); ?>
 
-
-<?php echo theme_css('bootstrap-responsive.css', true);?>
-<?php echo theme_css('style.css', true);?>
-
-<?php //echo theme_js('jquery.js', true);?>
-<?php echo theme_js('bootstrap.js', true);?>
-<?php echo theme_js('jquery_1.7.1_js.js', true);?>
-<?php echo theme_js('common.js', true);?>
-<?php echo theme_js('jquery.form.js', true); ?>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -38,21 +41,29 @@
 
 		<div class="span5">
 
-			<div class="logo"><?php echo theme_img('siteimg/logo.png', 'swap moto');?></div>
+			<div class="logo"><a href="<?php echo base_url();?>"><?php echo theme_img('siteimg/logo.png', 'swap moto');?></a></div>
 
 		</div>	
 
-		<div class="span7 sidebar">
+		<div class="span5 sidebar fr">
 
-			<div class="account_overview clearfix">
-
+			<div class="account_overview clearfix fr">
+				<?php
+				$cust = $this->go_cart->customer();
+				if(!empty($cust['firstname'])) {
+				?>
+				<a><span class="icon-pencil">&nbsp;</span>Welcome, <?php echo $cust['firstname']; ?></a>
+                <?php
+				}
+				?>
+                
 				<a href="<?php echo base_url()?>myaccount/"><span class="icon-pencil">&nbsp;</span>MY ACCOUNT</a>
 
 				<a href="#"><span class="icon-search">&nbsp;</span>TRACK ORDER</a>
 
-				<a href="#"><span class="icon-star">&nbsp;</span>WISHLIST</a>
+				<!--<a href="#"><span class="icon-star">&nbsp;</span>WISHLIST</a>-->
 
-				<span class="pull-right">Free Shiping on Oders Over $99</span>
+				
 
                 <?php if(!$this->Customer_model->is_logged_in(false, false)):?>
 
@@ -106,14 +117,12 @@
 		
 
 			<div class="span4">
-
-				<a href="<?php echo base_url()?>secure/add_item" class="btnn-big white-black-border pull-left">SELL YOUR GEAR</a>
-
+				<a href="<?php echo base_url()?>secure/add_item" class="btnn-big white-black-border pull-left">SELL YOUR PARTS AND GEAR</a>
 			</div>
 
 			<div class="span8">
 
-				<div class="red_text">Recycle your gear into $$</div>
+				<div class="red_text">Recycle your parts or gear in $$</div>
 
 				<ul class="list_inline">
 
@@ -157,8 +166,9 @@
 
           <div class="nav-collapse pagination-centered">
             <ul class="nav">
-            <?php foreach($this->categories as $cat_menu):?>
-			<li><a href="<?php echo site_url($cat_menu['category']->slug);?>">  
+            <?php
+			 foreach($this->categories as $cat_menu):?>
+			<li <?php if($cat_menu['category']->slug==$this->uri->segment(1)){ ?> class="active" <?php } ?>><a href="<?php echo site_url($cat_menu['category']->slug);?>">  
            <?php echo get_img('uploads/images/thumbnails/'.$cat_menu['category']->image,true); ?>
             <span class="text"><?php echo $cat_menu['category']->name;?></span></a> </li>
 								<?php endforeach;?>

@@ -421,7 +421,6 @@ Class Product_model extends CI_Model
 		}
 	}
 	public function get_modelIdbyname($modelaname=false,$catId){
-		echo $modelaname;
 		if($modelaname!=false){
 			$this->db->select('id');
 			$this->db->where('name',$modelaname);
@@ -443,8 +442,8 @@ Class Product_model extends CI_Model
 		if(!empty($data['term']))
 			{
 				$this->db->select('p.*, cat.name categoriname, sb.name subcategoriname');
-				$this->db->join('categories cat', 'cat.id=cat_id');
-				$this->db->join('categories sb', 'sb.id=sub_category_id');
+				$this->db->join('categories cat', 'cat.id=cat_id','left');
+				$this->db->join('categories sb', 'sb.id=sub_category_id','left');
 				$search	= json_decode($data['term']);
 				if(!empty($search->user_id)){
 					$this->db->where('user_id', $search->user_id);				
@@ -474,6 +473,32 @@ Class Product_model extends CI_Model
 			return false;
 		} else { return $result; }
 	}
+	public function check_feedback($product_id,$customer_id=null){
+	return $this->db->get_where('feedback', array('feedback_by'=>$customer_id,'product_id'=>$product_id))->row();
 	
+	}
+	public function count_feedback_list($product_id){
+	return $this->db->get_where('feedback', array('product_id'=>$product_id))->result();
+	}
 	
+	public function recently_listed_items($condetion,$start,$limit=10){
+	$this->db->select('*, LEAST(IFNULL(NULLIF(saleprice, 0), price), price) as sort_price', false);
+			$this->db->order_by('id','desc');
+			$this->db->limit($limit,$start);
+			$result = $this->db->get_where('products',$condetion)->result();
+			if(!$result)
+		{
+			return false;
+		} else { return $result; }
+	
+	}
+	public function total_listed_items($condetion){
+		$this->db->select('id', false);
+		$result = $this->db->get_where('products',$condetion)->result();
+			if(!$result)
+		{
+			return false;
+		} else { return count($result); }
+
+	}	
 }

@@ -10,6 +10,8 @@ $phone		= array('id'=>'bill_phone', 'class'=>'span3', 'name'=>'phone', 'value'=>
 ?>
 <div class="container">
 <div class="row" style="margin-top:50px;">
+		<?php echo $this->common_model->getMessage();?>
+
 	<div class="span7 offset1 login-bg ">
 		<div class="page-header login-header">
 			<h1><?php echo lang('form_register');?></h1>

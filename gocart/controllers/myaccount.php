@@ -211,7 +211,7 @@ class Myaccount extends Front_Controller {
 
         if (empty($product_id)) {
             //$this->session->set_flashdata('error', lang('error_not_found'));
-            $this->common_model->setMessage(3, lang('error_not_found'));
+            $this->common_model->setMessage(3,"Item not exist");
         }
         $customer = $this->go_cart->customer();
         $product = $this->Product_model->get_user_product($product_id, $customer['id']);
@@ -219,10 +219,11 @@ class Myaccount extends Front_Controller {
         if ($product == false) {
             //$this->session->set_flashdata('error', lang('error_not_found'));
             $this->common_model->setMessage(3, lang('error_not_found'));
+			$this->common_model->setMessage(3,"Item not exist");
         } else {
             $this->Product_model->delete_product($product_id);
             //$this->session->set_flashdata('message', lang('message_deleted_product'));
-            $this->common_model->setMessage(1, lang('message_deleted_product'));
+            $this->common_model->setMessage(1, "Item successfully removed");
         }
 
         redirect('/myaccount/list_item');
@@ -330,10 +331,12 @@ class Myaccount extends Front_Controller {
                 if ($customer['password'] === sha1($this->input->post('current_password'))) {
                     $haserror = false;
                 } else {
-                    $this->session->set_flashdata('error', lang('password_not_match'));
+					$this->common_model->setMessage(3,'Password not match.');
+					redirect('myaccount/change_password');
                 }
-            } else {
-                $this->session->set_flashdata('error', lang('enter_current_password'));
+            } elseif(isset($_POST['current_password']) && $_POST['current_password']==''){
+			$this->common_model->setMessage(3,'Enter current password.');
+			redirect('myaccount/change_password');
             }
             if ($haserror == false) {
                 if (!empty($_REQUEST['password'])) {
@@ -348,9 +351,12 @@ class Myaccount extends Front_Controller {
                             $this->common_model->setMessage(1, 'Password has been updated');
                             //$this->email_model->changePassword($this->input->post('password'),$this->customer);
                         }
+						$this->common_model->setMessage(3,'Sorry ! try again.');
+						redirect('myaccount/change_password');
                     }
                 } else {
-                    $this->common_model->setMessage(3, 'Please enter password');
+					$this->common_model->setMessage(3,'Please enter password.');
+					redirect('myaccount/change_password');
                    
                 }
             }
@@ -559,7 +565,6 @@ class Myaccount extends Front_Controller {
 	//We protect the variables
 	$message = mysql_real_escape_string(nl2br(htmlentities($message, ENT_QUOTES, 'UTF-8')));
 	//We send the message and we change the status of the discussion to unread for the recipient
-	print_r($req2);
 	$savedata = array();
 	$savedata['id'] = $id;
 	$savedata['id2'] = count($req2)+1;
@@ -575,8 +580,11 @@ class Myaccount extends Front_Controller {
 	$save = array();
 	$save['user'.$user_partic.'read']="yes";	
 	$this->faq_model->save($save, $condetion);	
-	 $this->common_model->setMessage(1, 'Ypor message sent');
+	 $this->common_model->setMessage(1, 'Your message sent.');
 	redirect('/myaccount/view_message/'.$id);
+	}elseif(isset($_POST['message']) and $_POST['message']==''){
+	$this->common_model->setMessage(3, 'Please enter message.');
+	redirect('/myaccount/view_message/'.$id);	
 	}
 		$data['convertion'] = $req2;
 		$data['message'] = $result;
@@ -591,14 +599,44 @@ class Myaccount extends Front_Controller {
 	}
 	
 	function save_feedback(){
+	$haserror = false;
+	$message = "";
 	$this->load->model(array('faq_model'));
-	$message = $this->input->post('feedback_msg');
+	$feedback_msg = $this->input->post('feedback_msg');
 	$product_id = $this->input->post('product_id');
-	$customer = $this->go_cart->customer();		
-	$condetion = array('id'=>$product_id);
-	$product	= $this->Product_model->get_similar_product($condetion,1);
-
+	$reting = $this->input->post('reting');
+	$customer = $this->go_cart->customer();	
+	$condetion = array('id'=>$product_id);	
+	$product = $this->Product_model->get_similar_product($condetion,1);
+	$product = $product[0];
+	//print_r($product);
+	$save['feedback'] = $feedback_msg;
+	$save['product_id'] = $product_id;
+	$save['rate'] = $reting;
+	$save['feedback_by'] = $customer['id'];
+	$save['feedback_to'] = $product->user_id;
+	$save['type'] = "B2S";
+	$save['feedback_on'] = time();
+	if($customer['id']==$product->user_id){
+	$message = "You are not allow to share feedback.";
+	$haserror = true;
+	}
+	if($haserror==false){
+	$feedback = $this->faq_model->save_feedback($save);
+	} else $feedback = false;
+	if($feedback!=false){
+	$result = array('status'=>'1','message'=>'Thanks for sharing your feedback');	
+	} else{
+	if($message==''){
+	$message = "Sorry ! Some error occured";
+	} 
+	$result = array('status'=>'0','message'=>$message);
+	}
+	echo json_encode($result);
 	
 	}
-
+	
+	public function open(){
+	echo "hello";	
+	}
 }

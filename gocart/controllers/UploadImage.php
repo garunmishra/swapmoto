@@ -27,14 +27,15 @@ class UploadImage extends Front_Controller {
 		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
 			$tempFile = $_FILES['Filedata']['tmp_name'];
 	 		$targetPath =  $targetFolder;
-			$targetFile = rtrim($targetPath,'/') . '/'.$verifyToken . $_FILES['Filedata']['name'];
+			$rand = rand(22222,333333333);
 	// Validate the file type
 			$fileTypes = array('jpg','jpeg','gif','png'); // File extensions
 			$fileParts = pathinfo($_FILES['Filedata']['name']);
+			$targetFile = rtrim($targetPath,'/') . '/'.$verifyToken .$rand.'.'.$fileParts['extension'];// $_FILES['Filedata']['name'];
 			if (in_array($fileParts['extension'],$fileTypes)) {
 				move_uploaded_file($tempFile,$targetFile);
 				// crop image 
-				$upload_data['file_name'] = $verifyToken.$_FILES['Filedata']['name'];
+				$upload_data['file_name'] = $verifyToken.$rand.'.'.$fileParts['extension'];//$_FILES['Filedata']['name'];
 				$this->load->library('image_lib');
 			/*
 			

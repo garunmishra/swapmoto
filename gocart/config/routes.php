@@ -44,3 +44,4 @@ $route['default_controller']	= "cart";
 $route['admin']					= 'admin/dashboard';
 $route['admin/media/(:any)']		= 'admin/media/$1';
 $route['seller/seller_listed_items/(:num)']					= 'seller/seller_listed_items/$1';
+$route['myaccount/view_message/(:num)']					= 'myaccount/view_message/$1';

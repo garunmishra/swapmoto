@@ -150,7 +150,7 @@ Class order_model extends CI_Model
 	{
 		$this->db->join('order_items', 'orders.id = order_items.order_id');
 		$this->db->order_by('ordered_on', 'DESC');
-		return $this->db->get_where('orders', array('customer_id'=>$id), 15, $offset)->result();
+		return $this->db->get_where('orders', array('customer_id'=>$id), 50, $offset)->result();
 	}
 	
 	function count_customer_orders($id)

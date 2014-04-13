@@ -68,7 +68,7 @@ class Authorize_net_lib {
         }else{
             curl_close ($ch);
         }
-        $temp_values = explode($this->settings['authorize_net_x_delim_char'], $this->response_string);
+       $authRes = $temp_values = explode($this->settings['authorize_net_x_delim_char'], $this->response_string);
         $temp_keys= array (
             "Response_Code", "Response_Subcode", "Response_Reason_Code", "Response_Reason_Text",
             "Approval_Code", "AVS_Result_Code", "Transaction_ID", "Invoice_Number", "Description",
@@ -92,6 +92,12 @@ class Authorize_net_lib {
             $this->response["$temp_keys[$i]"] = $temp_values[$i];
         }
         return $this->response['Response_Code'];
+		
+		/*echo "<pre>";
+		print_r($this->response);
+		print_r($authRes);
+		die;*/
+		
    }
    
    function get_response_reason_text() {

@@ -47,6 +47,9 @@ Class Common_model extends CI_Model
 			}
 		}
 	}  
-        
+      
+	  public function word_crop($string, $length=4, $dots = "..."){
+    return (strlen($string) > $length) ? substr($string, 0, $length - strlen($dots)) . $dots : $string;
+		}  
 	
 }

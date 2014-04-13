@@ -12,14 +12,76 @@ class Cart extends Front_Controller {
 
 	function index()
 	{
-		$this->load->model(array('Banner_model', 'box_model'));
-		$this->load->helper('directory');
-
-		$data['gift_cards_enabled'] = $this->gift_cards_enabled;
-		$data['banners']			= $this->Banner_model->get_homepage_banners(5);
-		$data['boxes']				= $this->box_model->get_homepage_boxes(4);
-		$data['homepage']			= true;
+	
+		$this->load->library('pagination');
+		//$this->load->model(array('Banner_model', 'box_model'));
+		//$this->load->helper('directory');
+		// to set pagenition 
+		$getdata = (isset($_GET)?$_GET:'');
+		$suf = '';
+		$con = array();
+		if(isset($getdata['company_id']) && $getdata['company_id']!='')
+		{
+			$suf.= "& company_id=".$getdata['company_id'];
+			$con['company_id'] = $getdata['company_id'];
+			$data['company_id'] = $getdata['company_id'];
+			$data['subcatlist'] =  $this->Product_model->get_model_list($getdata['company_id']);
+		}
+		if(isset($getdata['modelid']) && $getdata['modelid']!='')
+		{
+			$suf.=($suf!=''?'&':'');
+			$suf.= "modelid=".$getdata['modelid'];
+			$con['model_id']=$getdata['modelid'];
+			$data['model_id'] = $getdata['modelid'];
+			
+		}
+		$suf = trim($suf,'&');
+		$con['admin_approve'] = 1;
+		$con['enabled'] = 1;
+		// end 
+		$condetion = $con; //array('admin_approve'=>1,'enabled'=>1);
+		$start = (isset($_GET['page'])&& $_GET['page']!=''?$_GET['page']:0);
+		$limit = 12;
+		$data['products'] = $this->Product_model->recently_listed_items($condetion,$start,$limit);
+		$total_products = $this->Product_model->total_listed_items($condetion);
+		//$data['gift_cards_enabled'] = $this->gift_cards_enabled;
+		//$data['banners']			= $this->Banner_model->get_homepage_banners(5);
+		//$data['boxes']				= $this->box_model->get_homepage_boxes(4);
 		
+		$config['base_url'] = base_url();
+		$config['total_rows'] = $total_products;
+		$config['per_page'] = $limit; 
+		$config['page_query_string'] = TRUE;
+		$config['query_string_segment'] = 'page';
+		$suf = ($suf!='')?"&".$suf:'';
+		$config['suffix'] = $suf;
+
+		
+		$config['first_link']		= 'First';
+		$config['first_tag_open']	= '<li>';
+		$config['first_tag_close']	= '</li>';
+		$config['last_link']		= 'Last';
+		$config['last_tag_open']	= '<li>';
+		$config['last_tag_close']	= '</li>';
+
+		$config['full_tag_open']	= '<div class="pagination"><ul>';
+		$config['full_tag_close']	= '</ul></div>';
+		$config['cur_tag_open']		= '<li class="active"><a href="#">';
+		$config['cur_tag_close']	= '</a></li>';
+		
+		$config['num_tag_open']		= '<li>';
+		$config['num_tag_close']	= '</li>';
+		
+		$config['prev_link']		= '&laquo;';
+		$config['prev_tag_open']	= '<li>';
+		$config['prev_tag_close']	= '</li>';
+
+		$config['next_link']		= '&raquo;';
+		$config['next_tag_open']	= '<li>';
+		$config['next_tag_close']	= '</li>';
+		
+		$this->pagination->initialize($config);
+		$data['homepage']			= true;
 		$this->load->view('homepage', $data);
 	}
 
@@ -238,9 +300,18 @@ class Cart extends Front_Controller {
 		$this->pagination->initialize($config);
 		
 		//grab the products using the pagination lib
-                if($data['category']->parent_id=='0')
+		$menuArry = array();
+                if($data['category']->parent_id=='0'){
                 $condetion = array('cat_id'=>$data['category']->id, 'enabled'=>1,'admin_approve'=>1);
-                else $condetion = array('sub_category_id'=>$data['category']->id, 'enabled'=>1,'admin_approve'=>1);
+				$menuArry['category_info'] = $this->Category_model->get_category($data['category']->id);
+				}
+                else{
+				
+				$condetion = array('sub_category_id'=>$data['category']->id, 'enabled'=>1,'admin_approve'=>1);
+				$menuArry['sub_category_info'] = $this->Category_model->get_category($data['category']->id);
+				$menuArry['category_info'] = $this->Category_model->get_category($menuArry['sub_category_info']->parent_id);
+				}
+				$data['menu'] = $menuArry;
 		$data['products']	= $this->Product_model->get_products($condetion, $config['per_page'], $page, $sort_by['by'], $sort_by['sort']);
 		foreach ($data['products'] as &$p)
 		{
@@ -295,7 +366,15 @@ class Cart extends Front_Controller {
 		}
 
 		$data['gift_cards_enabled'] = $this->gift_cards_enabled;
-		
+		$menuArry = array();
+		$menuArry['category_info'] = $this->Category_model->get_category($data['product']->cat_id);
+		if($data['product']->sub_category_id!=0){
+		$menuArry['sub_category_info'] = $this->Category_model->get_category($data['product']->sub_category_id);
+		}
+		$data['menu'] = $menuArry;
+		$customer = $this->go_cart->customer();
+		$data['feedback'] = $this->Product_model->check_feedback($id,$customer['id']);
+		$data['feedbacklist'] = $this->Product_model->count_feedback_list($id);
 		$this->load->view('product', $data);
 	}
 	

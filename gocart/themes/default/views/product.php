@@ -3,29 +3,61 @@
 
 <div class="container mar-top">
     	
+       <a href="<?php echo site_url($menu['category_info']->slug);?>"><?php echo $menu['category_info']->name; ?></a> 
+<?php if(isset($menu['sub_category_info'])){
+?>
+>> <a href="<?php echo site_url($menu['sub_category_info']->slug);?>"><?php echo $menu['sub_category_info']->name; ?></a>
+<?php } ?>
+>> <a style="cursor:default; text-decoration:none"><?php echo $product->name;?></a>
+
+        	<!-- popup code !-->
        
         	<div class="span5">
        		 <div class="row primary-img tx-cntr">
 			<div id="primary-img" class="span5 sidebar ">
 			
-				<?php echo theme_img('siteimg/19475035055305eeca1489d.jpg',$product->name,'responsiveImage');?>		</div>
+				<?php
+				if(!isset($product->images[0]) || $product->images[0]==''){
+				$photo = '<img   src="'.get_img('gocart/themes/default/assets/img/siteimg/no_picture.png').'" alt="'.$product->seo_title.'"/>' ;
+				} else {
+				 $photo	= '<img class="responsiveImage" src="'.base_url('uploads/images/medium/'.$product->images[0]).'" alt="'.$product->seo_title.'"/>';
+				 }
+				echo $photo;
+				?>
+					</div>
 		</div>
         <div class="row">
         <div class="span5 product-images sidebar">
-       <?php echo theme_img('siteimg/19475035055305eeca1489d.jpg',$product->name,'span1 sidebar brdr');?>
-		 <?php echo theme_img('siteimg/19475035055305eeca1489d.jpg',$product->name,'span1 sidebar brdr');?>
-		  <?php echo theme_img('siteimg/19475035055305eeca1489d.jpg',$product->name,'span1 sidebar brdr');?>
-		   <?php echo theme_img('siteimg/19475035055305eeca1489d.jpg',$product->name,'span1 sidebar brdr');?>
+       
+		
+		<?php 
+		if(count($product->images) > 1):?>
+		<div class="row">
+			<div class="span4 product-images">
+				<?php foreach($product->images as $image):?>
+				<img class="span1" onclick="$(this).squard('390', $('#primary-img'));" src="<?php echo base_url('uploads/images/medium/'.$image);?>"/>
+				<?php endforeach;?>
+			</div>
+		</div>
+		<?php else: ?>
+		<div class="row">
+			<div class="span4 product-images">
+			<img class="span1" onclick="$(this).squard('390', $('#primary-img'));" src="<?php echo get_img('gocart/themes/default/assets/img/siteimg/no_picture.png'); ?>"/>
+			</div>
+			</div>
+		
+		<?php endif;?>
         </div>
         </div>
         
         	</div>
+       <!-- end !-->
        
         
         
         <div class="span18">
         <div class="page-header mar-topn">
-					<h3 style="font-weight:normal"><?php echo $product->name;?></h3>
+					<h3 style="font-weight:normal"><?php echo $this->common_model->word_crop($product->name,'20','..');?></h3>
                         <div class="row">
                 	<div class="fl">
                     Code: <span class="red12"><?php echo $product->sku;?></span>
@@ -190,7 +222,37 @@
 						<div style="display:none"; id="showmsg"></div>
 						<textarea name="faq_box" id="faq_box" class="spanqp"></textarea>
 						<button class="btn btn-primary btn-large pull-right" id="faq_btn">Ask this seller A Question</button>
-													</div>
+						</div>
+                        <!-- code for review and retting -->
+						<?php if(empty($feedback)){ ?>
+						<div style="display:none"; id="feedback_showmsg"></div>
+						<div id="feedback_cont">
+						<textarea name="feedback_box" id="feedback_box" class="span2 cart-inp1"></textarea>
+						<select name="reting" id="reting">
+						<option value="">Select reting</option>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						</select>
+						<button class="btn btn-primary btn-large pull-right" id="feedback_btn">Send Feedback & reting</button>
+						</div>
+						<?php } else { ?>
+						reting : <?php echo $feedback->rate ?>
+						review  : <?php echo $feedback->feedback; ?>
+						<?php } ?>
+						<!--=================Show feedback histry -->
+						
+						<?php foreach($feedbacklist as $feedback){ ?>
+						<?php echo " Feedback : ".$feedback->feedback."<br>"; ?>
+						<?php } ?>
+						<!-- !-->
+						<!-- end -->
+                        
+                        
+                        
 
 					</div>
 				</div>
@@ -207,7 +269,7 @@
                         	<div class="fl"><strong>Avg. Ship:</strong>   87.5 Hours</div>
                             </div>
                          <div class="row">
-                        	<div class="fl"><a href="#">Seller Statistics</a> <span> | </span> <a href="#">Seller Reviews</a> <span> | </span>  <a href="#">Seller's Other Items</a></div>
+                        	<div class="fl"><a href="#">Seller Statistics</a> <span> | </span> <a href="#">Seller Reviews</a> <span> | </span>  <a href="<?php echo base_url('seller/seller_listed_items/'.$product->user_id); ?>">Seller's Other Items</a></div>
                       </div>
 
 					</div>
@@ -265,6 +327,38 @@ $('#faq_btn').click(function(){
 				$('#showmsg').html('Opps ! try again to ask question.').show();
 				}
 				});
+	});
+	
+	$('#feedback_btn').click(function(){
+	var feedback_val = $('#feedback_box').val().trim();
+	var product_id = '<?php  echo $product->id?>';
+	var reting = $('#reting').val().trim();
+	var haserror = false
+	if(feedback_val==''){
+	$('#feedback_showmsg').html('Enter feedback').show();
+	haserror = true;
+	}
+	if(reting==''){
+	$('#feedback_showmsg').html('Select reting').show();
+	haserror = true;
+	}
+	if(haserror==false){
+	var st = window.confirm('Are you sure want to submit feedback');
+	if(st==true){
+	$.post("<?php echo site_url('myaccount/save_feedback');?>", { feedback_msg: feedback_val, product_id:product_id, reting:reting},
+				function(data) { 
+				var respose = JSON.parse(data);
+				
+				if(respose.status==1){
+				$('#feedback_cont').hide();
+				$('#feedback_showmsg').html(respose.message).show();
+				} else{
+				$('#feedback_showmsg').html(respose.message).show();
+				}
+				});
+				}
+		}
+		
 	});
 </script>
 <?php include('footer.php'); ?>

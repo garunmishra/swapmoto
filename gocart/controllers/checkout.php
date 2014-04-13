@@ -390,7 +390,7 @@ class Checkout extends Front_Controller {
 		}
 		/* now where? continue to step 4 */
 		else
-		{
+		{ 
 			$this->step_4();
 		}
 	}
@@ -496,6 +496,7 @@ class Checkout extends Front_Controller {
 
 	function place_order()
 	{		
+	
 		// retrieve the payment method
 		$payment 			= $this->go_cart->payment_method();
 		$payment_methods	= $this->_get_payment_methods();
@@ -518,6 +519,10 @@ class Checkout extends Front_Controller {
 				redirect('checkout/step_3');
 			}
 		}
+		/*echo "<pre>";
+		print_r($payment);
+		print_r($payment_methods);		
+		die;*/
 		
 		if(!empty($payment) && (bool)$payment_methods == true)
 		{
@@ -528,16 +533,17 @@ class Checkout extends Front_Controller {
 			// Is payment bypassed? (total is zero, or processed flag is set)
 			if($this->go_cart->total() > 0 && ! isset($payment['confirmed'])) {
 				//run the payment
-				$error_status	= $this->$payment['module']->process_payment();
-				if($error_status !== false)
+				$Payment_response	= $this->$payment['module']->process_payment();
+				if($Payment_response['Response_Code'] == false)
 				{
 					// send them back to the payment page with the error
-					$this->session->set_flashdata('error', $error_status);
+					$this->session->set_flashdata('error', $Payment_response);
 					redirect('checkout/step_3');
 				}
 			}
 		}
-			
+		
+			//echo "xxxxxxxxxxxxxxxxxxxxxx";die;
 		
 		// save the order
 		$order_id = $this->go_cart->save_order();
@@ -584,11 +590,18 @@ class Checkout extends Front_Controller {
 			}
 		}
 		
-		$row['content'] = html_entity_decode($row['content']);
+		
+		$row['content'] = isset($row['content']) ? html_entity_decode($row['content']) : '';
 		
 		// set replacement values for subject & body
 		// {customer_name}
+		if(isset($row['subject'])){
 		$row['subject'] = str_replace('{customer_name}', $data['customer']['firstname'].' '.$data['customer']['lastname'], $row['subject']);
+		} else {
+		$row['subject'] = 'Payment on swapmoto';
+		}
+		
+		
 		$row['content'] = str_replace('{customer_name}', $data['customer']['firstname'].' '.$data['customer']['lastname'], $row['content']);
 		
 		// {url}

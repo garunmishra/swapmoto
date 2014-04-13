@@ -216,13 +216,13 @@ function areyousure()
 
 </style>
 
-<?php echo $this->common_model->getMessage(); ?>
 
 <div class="row">
 
 
 
-	<div class="span9" style="border-bottom:1px solid #f5f5f5;">
+	<div class="span9" >
+<?php echo $this->common_model->getMessage(); ?>
 
 
 
@@ -240,12 +240,12 @@ function areyousure()
 
 			</div>
 
-            <div style="float:right"> <a href="<?php echo site_url('secure/add_item');?>">List an item</a> </div>
+            
 
 
 
            
-
+<div class="span3 sidebar fr"><a class="pull-right btnn red" href="<?php echo site_url('secure/add_item');?>">Update list item</a></div>
 	<table class="table table-striped">
 
 
@@ -364,7 +364,7 @@ function areyousure()
 
 
 
-						<a class="btn" href="<?php echo  base_url().'secure/add_item/' .$product->id;?>">
+						<a style=" padding:6px 25px 5px 25px;" class="btn" href="<?php echo  base_url().'secure/add_item/' .$product->id;?>">
 
 						<?php //echo theme_img('siteimg/c_edit.png',true);?>  <?php echo'edit';?></a>
 
@@ -374,7 +374,7 @@ function areyousure()
 
 
 
-						<a class="btn btn-danger" href="<?php echo  base_url().'myaccount/remove_item/' .$product->id; ?>" onclick="return areyousure();"><i class="icon-trash icon-white"></i> <?php echo 'delete';?></a>
+						<a style=" padding:5px 25px;" class="btn btn-danger" href="<?php echo  base_url().'myaccount/remove_item/' .$product->id; ?>" onclick="return areyousure();"><i class="icon-trash icon-white"></i> <?php echo 'delete';?></a>
 
 
 

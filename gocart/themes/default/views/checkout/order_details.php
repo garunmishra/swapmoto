@@ -22,12 +22,12 @@
 			}
 			?>
 		</a>
-	</div>
+	
 	<?php endif;?>
 
 <?php if(config_item('require_shipping')):?>
 	<?php if($this->go_cart->requires_shipping()):?>
-		<div class="span3">
+		
 			<a href="<?php echo site_url('checkout/shipping_address');?>" class="btn btn-block"><?php echo lang('shipping_address_button');?></a>
 			<p>
 				<?php echo format_address($customer['ship_address'], true);?>
@@ -56,4 +56,5 @@
 		<?php echo $payment_method['description'];?>
 	</div>
 <?php endif;?>
+</div>
 </div>

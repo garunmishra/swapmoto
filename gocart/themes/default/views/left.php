@@ -2,20 +2,42 @@
 				<div class="widget_box">
 					<div class="widget_title">Select a Motercycle</div>
 					<div class="widget_body light_blue">
-						<select>
-							<option selected="selected" value="Select a year">Select a year</option>
-							<option value="Select a year">1990</option>
-						</select>
-						<select>
-							<option selected="selected" value="Select a year">Select Make</option>
-							<option value="Select a year">1990</option>
-						</select>
-						<select>
-							<option selected="selected" value="Select a year">Select Model</option>
-							<option value="Select a year">1990</option>
-						</select>
+					<form method="get" action="<?php echo base_url(); ?>"	>
+					<?php 
+					$company_list = $this->Product_model->get_company_list();
+					?>					
+						<select name="company_id" id="company_id" class="text-box">
+                            <option value=''>Select Brand</option>
+                            <?php 
+							foreach($company_list as $company_val):
+							?>
+                            <option value="<?php echo  $company_val->company_id; ?>"
+							 <?php if(isset($company_id) && $company_id==$company_val->company_id){ ?>selected="selected" <?php } ?>><?php echo( $company_val->company_name); ?></option>
+                            <?php
+							endforeach;
+							?>
+                            </select>
+							<div id="modelContener">
+							<select name="modelid" id="modelid">
+							<option selected="selected" value="">Select Model</option>
+						<?php
+						if(isset($subcatlist)):
+							foreach($subcatlist as $subcatval):
+							?>
+					<option value="<?php echo $subcatval->model_id; ?>"
+					 <?php if(isset($model_id) && $subcatval->model_id==$model_id){ ?> selected="selected" <?php } ?>>
+					 <?php echo $subcatval->model_name; ?>
+					 </option>";
+					<?php endforeach; ?>
+					<?php
+					endif;
+					?>
+							</select>
+							</div>
+						
 						<input value="Search By Radius" type="text">
 						<div class="button_wrap">
+						<input type="submit" name="search" value="search" />
 							<a href="#" class="red sm-bn">Shop this Motercycle</a> <a href="#" class="blue_underline">All models</a>
 						</div>
 
@@ -65,3 +87,19 @@
 				<!-- widget_box -->							
 				
 			</div>
+			<script language="javascript">
+			
+	$('#company_id').change( function(){
+	var catval =  $('#company_id').val();
+	if(catval!=''){	//else{
+	// show model
+	$.post("<?php echo site_url('secure/get_model_list');?>", { id: catval},
+	function(data) { 
+	
+	$('#modelContener').html(data).show();
+	}
+	});
+	// 										
+	//}
+	});
+			</script>

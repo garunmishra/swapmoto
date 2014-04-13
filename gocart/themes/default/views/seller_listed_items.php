@@ -18,26 +18,29 @@
                                     <?php if(count($products) > 0):?>
                                     <?php foreach($products as $product):?>
                                     <?php
-						$photo	= theme_img('no_picture.png', lang('no_image_available'));
-						$product->images=json_decode($product->images);					
-				
-						if(!empty($product->images[0]))
+				 		 $product->images =  json_decode($product->images);						
+						$defult_img = '';
+						if(isset($product->images[0]) && !empty($product->images[0]))
 						{
-							$product->images	= array_values($product->images);
-							$primary	= $product->images[0];
-							foreach($product->images as $photo)
-							{
-								if(isset($photo->primary))
-								{
-									$primary	= $photo;
-								}
-							}
+						$photo	= ''; //theme_img('no_picture.png', lang('no_image_available'));
+						$product->images	= array_values($product->images);
+							
 
 							//$photo	= '<img width= height="104" src="'.base_url('uploads/images/thumbnails/'.$primary->filename).'" alt="'.$product->seo_title.'"/>';
-						}
-                                                $photo	= '<img width="" height="104" src="'.base_url('uploads/images/thumbnails/'.$product->images[0]).'" alt="'.$product->seo_title.'"/>';
+						} else{
 						
-						?>
+						 $defult_img	= '<img  height="104" src="'.get_img('gocart/themes/default/assets/img/siteimg/no_picture.png').'" alt="'.$product->seo_title.'"/>' ;//theme_img('no_picture.png', lang('no_image_available'));
+
+						}
+						if($defult_img==''){
+						 $photo	= '<img  height="104" src="'.base_url('uploads/images/thumbnails/'.$product->images[0]).'" alt="'.$product->seo_title.'"/>';
+						}
+						else { 
+						$photo = $defult_img;
+						}
+						
+						
+						?>                   
 					<div class="span2" style="height:305px;margin-bottom: 10px">
 						<div class="shop_box">
 							<div class="title">RECENTLY LISTED</div>
@@ -49,7 +52,13 @@
                                                         <div class="sub-title"><?php echo $product->name; ?></div>
                                                         <?php endif; ?>
 							<div class="info">
-                                                            <span class="condition">Condition: Excellent</span>
+                                                            <span class="condition">Condition:
+															<?php 
+							if($product->condition==0){ echo "Not define"; }
+							 if($product->condition==1){ echo "Old"; }
+							 elseif($product->condition==2){ echo "Good";}
+							 elseif($product->condition==3){echo "Excellent";} ?>
+															 </span>
 								<span class="discount">64% off of Retail</span>
 							</div>
                                                         <div class="price">

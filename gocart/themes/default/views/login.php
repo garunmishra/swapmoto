@@ -3,6 +3,7 @@
 
 
 <div class="container"><div class="row" style="margin-top:50px;">
+<?php echo $this->common_model->getMessage();?>
 
 	<div class="span6 offset2 login-bg">
 

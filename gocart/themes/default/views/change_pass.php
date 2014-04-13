@@ -30,11 +30,11 @@
 
 
 
-$password	= array('id'=>'password', 'class'=>'span4', 'name'=>'password', 'value'=>'');
+$password	= array('id'=>'password', 'class'=>'span3', 'name'=>'password', 'value'=>'');
 
 
 
-$confirm	= array('id'=>'confirm', 'class'=>'span4', 'name'=>'confirm', 'value'=>'');
+$confirm	= array('id'=>'confirm', 'class'=>'span3', 'name'=>'confirm', 'value'=>'');
 
 
 
@@ -80,17 +80,17 @@ $confirm	= array('id'=>'confirm', 'class'=>'span4', 'name'=>'confirm', 'value'=>
 
 
 
-					<div class="span4 sidebar">
+					<div class="span3 sidebar">
 
 						<label for="account_password"><?php echo lang('current_password');?></label>
 
-						<?php echo form_password(array('name'=>'current_password', 'id' => 'current_password', 'class' => 'span4'));?>
+						<?php echo form_password(array('name'=>'current_password', 'id' => 'current_password', 'class' => 'span3'));?>
 
 					</div>
 
 
 
-					<div class="span4 ">
+					<div class="span3 ">
 
 
 
@@ -110,7 +110,7 @@ $confirm	= array('id'=>'confirm', 'class'=>'span4', 'name'=>'confirm', 'value'=>
 
 
 
-					<div class="span4 sidebar">
+					<div class="span3 ">
 
 
 

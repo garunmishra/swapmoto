@@ -1,44 +1,37 @@
 <?php  include('header.php');?>
 <?php $GLOBALS['option_value_count']		= 0;
 ?>
-	<script type="text/javascript">
-		<?php $timestamp = time();?>
-		
-		
-           
-		function del_img(img_name,sr,isremove=true){
-			var con = window.confirm('Are you sure want to remove this image from list?');
-			if(con==true){
-			$('#img_'+sr).remove();
-			$('#hid_'+sr).remove();
-			if(isremove==true){
-			$.post("<?php echo site_url('UploadImage/remove_image');?>", { img_name: img_name},
-				function(data) { 
-				});
-			}
-			}
-		}
-	</script>
-    <?php  ?>
+<?php $timestamp = time();?>
+
+<style>
+.errorfield{color:#F00}
+</style>
+
+
 <div class="container mar-top">
     	<div class="row header_widgets">
-    		<div class="span4">
+
+    		<div class="span19">
+
     			<div class="head_widget">
     				<span class="edit pull-left">&nbsp;</span>
-    				<h3>LIST YOUR ITEM</h3>
+
+    				<h3>LIST YOUR PARTS OR GEAR</h3>
+
     				<p>Take some photo % write a few words. It's free to list.</p>
+
     			</div>
     			<!-- head_widget -->
     		</div>
-    		<div class="span4">
+    		<div class="span19">
     			<div class="head_widget">
 	    			<span class="ship pull-left">&nbsp;</span>
-	    			<h3>SHIP YOUR ITEM</h3>
+	    			<h3>SHIP YOUR PARTS OR GEAR</h3>
 	    			<p>Update the tracking number in My Account.</p>
 	    		</div>
     			<!-- head_widget -->
     		</div>
-    		<div class="span4">
+    		<div class="span19">
     			<div class="head_widget">
 	    			<span class="dollar pull-left">&nbsp;</span>
 	    			<h3>GET PAID</h3>
@@ -90,7 +83,7 @@
                               
                                 </div>
 								<div class="bold light-gray">Add a photo or two!</div>
-								<p class="short">Or three, or more! Guests love photos that highlight the features of your space.</p>
+								<p class="short">Or three, or more! Prospective Buyers love photos that highlight the features of your parts or gear.</p>
 								
                            
                    
@@ -120,15 +113,17 @@
 								<span class="help-block pagination-right">50 characters remaining</span>
 							</div>
 							<!-- /.box.center -->
-							<div class="title"><span class="title-edit">&nbsp;</span> Tell a Story ABOUT YOUR ITEM</div>
+							<div class="title"><span class="title-edit">&nbsp;</span> Tell a Story ABOUT YOUR PARTS OR GEAR</div>
 							<div class="box">
-								<label for="">You Know your item best. The more information you can provide, the faster it will sell.</label>								
+								<label for="">You know your item best. The more information you can provide, the faster it will sell.</label>								
                                 <?php
 						$data	= array('name'=>'description', 'class'=>'text-box','id'=>'description', 'value'=>set_value('description', $description));
 						echo form_textarea($data);
 						?>
                         <div id="descriptionError" class="errorfield"></div>
-								<span class="help-block pagination-right">50 characters remaining</span>
+
+								<span class="help-block pagination-right">1000 characters remaining</span>
+
 							</div>
 							<!-- /.box.center -->
 							<div class="title"><span class="grid">&nbsp;</span> Choose a Category that best fits.</div>
@@ -159,7 +154,7 @@
 								<div class="line">&nbsp;</div>
 								<div class="styled-select"> 
                                 <select name="company_id" id="company_id" class="text-box">
-                            <option value=''>select Brand</option>
+                            <option value=''>Select Brand</option>
                             <?php 
 							foreach($company_list as $company_val):
 							?>
@@ -189,14 +184,7 @@
 		echo form_dropdown('condition', $options, set_value('condition',$condition), 'class="text-box"');
 		?>
 								</div>
-								<div class="styled-select">
-									<?php
-	 	$options = array(	 '0'	=> lang('disabled')
-							,'1'	=> lang('enabled')
-							);
-		echo form_dropdown('enabled', $options, set_value('enabled',$enabled), 'class="text-box"');
-		?>
-								</div>
+								
                                 <div class="styled-select">
                                 <?php
 
@@ -206,15 +194,7 @@
 		echo form_dropdown('shippable', $options, set_value('shippable',$shippable), 'class="text-box"');
 		?></div>
         
-        <div class="styled-select">
-                               
-                               <?php
-		$options = array(	 '1'	=> lang('taxable')
-							,'0'	=> lang('not_taxable')
-							);
-		echo form_dropdown('taxable', $options, set_value('taxable',$taxable), 'class="text-box"');
-		?>
-                               </div>
+        
 								<div class="styled-select">
                                 
                                 <?php
@@ -265,13 +245,16 @@
 				</div>
 				<!-- widget_box -->
 				<div class="widget_box pagination-centered mtop">
-					<h3 class="redc">LISTING YOUR ITEM IS FREE</h3>
+					<h3 class="redc">LISTING YOUR PARTS OR GEAR IS FREE</h3>
 					<p>If your item does not sell, we don’t charge you. We handle all the payments processing and customer service. All you need to do is list and ship your gear then we send you a check.</p>
 				</div>
 				<!-- widget_box -->		
 				<div class="widget_box pagination-centered mtop">
-					<h3 class="redc">TALK ABOUT YOUR ITEM</h3>
-					<p>Take some photos &amp; write a few  words. it's free to list.</p>
+
+					<h3 class="redc">TALK ABOUT YOUR PARTS OR GEAR</h3>
+
+					<p>Take some photos &amp; write a few  words. It's free to list.</p>
+
 				</div>
 				<!-- widget_box -->							
 				
@@ -334,6 +317,7 @@ $(document).ready(function() {
 		if($('#name').val().trim()==''){
 			haserror = true;
 			$('#nameError').html('Enter item title');
+			$('#name').focus();
 		} else {$('#nameError').html('');}
 		
 		/*if($('#description').val().trim()==''){
@@ -344,6 +328,7 @@ $(document).ready(function() {
 		if($('#category_id').val()==''){
 			haserror = true;
 			$('#categoryError').html('Select category for item');
+			$('#category_id').focus();
 		} else $('#categoryError').html('');
 		
 		if($('#company_id').val()==''){
@@ -380,10 +365,23 @@ $(document).ready(function() {
                     $("#view").html('<img src="./theme/img/loading.gif" />');
                     $(".ajaxform").ajaxForm(function(response){
                                    // alert('The File ' + file.name + " has been uploaded with response "+response+" --data status: "+data);
-                 $('#brandImage').append("<img id='img_"+i+"' class='image_cls' src='<?php echo site_url('uploads/images/small/');?>/"+response+"' width='50' hieght='50' onClick=del_img('"+response+"','"+i+"')>");
+                 $('#brandImage').append("<img id='img_"+i+"' class='image_cls' src='<?php echo site_url('uploads/images/small/');?>/"+response+"' width='50' hieght='50' onClick=del_img('"+response+"','"+i+"','"+true+"')>");
 				 $('#img_cant').append("<input type='hidden' id='hid_"+i+"' name='images[]' value='"+response+"'>");
                   i++;
                     }).submit();
                 }
 
+
+                        function del_img(img_name,sr,isremove){
+			var con = window.confirm('Are you sure want to remove this image from list?');
+			if(con==true){
+			$('#img_'+sr).remove();
+			$('#hid_'+sr).remove();
+			if(isremove==true){
+			$.post("<?php echo site_url('UploadImage/remove_image');?>", { img_name: img_name},
+				function(data) { 
+				});
+			}
+			}
+		}
 </script>

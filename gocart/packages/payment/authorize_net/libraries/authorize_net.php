@@ -176,18 +176,149 @@ class Authorize_net
 		$this->CI->authorize_net_lib->process_payment();
         $authnet_response = $this->CI->authorize_net_lib->get_all_response_codes();
 		
-		
 		// Forward results
         if($authnet_response['Response_Code'] == '1') 
 		{    
             // payment success, we can destroy our tmp card data
 			$this->CI->session->unset_userdata('cc_data');
-			return false;   // false == no error
+			return $authnet_response;   // false == no error
         }
 		else 
 		{
             // payment declined, return our user to the form with an error.
-			return lang('transaction_declined');                        
+			//return lang('transaction_declined');
+			
+			switch($authnet_response['Card_Code_CVV_Response Code'])
+			{
+			case 'N' :
+			$ccresponse= 'The card code verification (CCV) Not Matched';
+			break;
+			case 'P' :
+			$ccresponse= 'The card code verification (CCV) Not Processed';
+			break;
+			case 'S' :
+			$ccresponse= 'The card code verification (CCV) Not Matched';
+			break;
+			case 'U' :
+			$ccresponse= 'The card code verification (CCV) Issuer unable to process request';
+			break;
+			case '' :
+			$ccresponse= 'The card code verification (CCV) Not Processed';
+			break;
+			}
+			
+			
+			switch($authnet_response['AVS_Result_Code'])
+			{
+			case 'A' :
+			$avsresponse= 'The Address Verification Service (AVS) Address (Street) matches, ZIP does not';
+			break;
+			case 'B' :
+			$avsresponse= 'Address information not provided for AVS check';
+			break;
+			case 'E' :
+			$avsresponse= 'AVS error';
+			break;
+			case 'G' :
+			$avsresponse= 'Non-U.S. Card Issuing Bank';
+			break;
+			case 'N' :
+			$avsresponse= 'No Match on Address (Street) or ZIP';
+			break;
+			case 'P' :
+			$avsresponse= 'AVS not applicable for this transaction';
+			break;
+			case 'R' :
+			$avsresponse= 'Retry—System unavailable or timed out';
+			break;
+			case 'S' :
+			$avsresponse= 'Service not supported by issuer';
+			break;
+			case 'U' :
+			$avsresponse= 'Address information is unavailable';
+			break;
+			case 'W' :
+			$avsresponse= 'Nine digit ZIP matches, Address (Street) does not';
+			break;
+			case 'X' :
+			$avsresponse= 'Address (Street) and nine digit ZIP match';
+			break;
+			case 'Y' :
+			$avsresponse= 'Address (Street) and five digit ZIP match';
+			break;
+			case 'Z' :
+			$avsresponse= 'Five digit ZIP matches, Address (Street) does not';
+			break;
+			case '' :
+			$avsresponse= 'AVS error';
+			break;
+			}
+			
+			
+			switch($authnet_response['Response_Code'])
+			{
+			case '3' :
+			$responseCode= 'Error in Transaction, Some Thing Went Wrong';
+			break;
+			case '4' :
+			$responseCode= 'Transaction is Held for Review';
+			break;
+			}
+			
+			switch($authnet_response['Cardholder_Authentication_Verification_Value_CAVV_Response_Code'])
+			{
+			case '0' :
+			$cavvResponse= 'CAVV not validated because erroneous data was submitted';
+			break;
+			case '1' :
+			$cavvResponse= 'CAVV failed validation';
+			break;
+			case '3' :
+			$cavvResponse= 'CAVV validation could not be performed; issuer attempt incomplete';
+			break;
+			case '4' :
+			$cavvResponse= 'CAVV validation could not be performed; issuer system error';
+			break;
+			case '5' :
+			$cavvResponse= 'Reserved for future use';
+			break;
+			case '6' :
+			$cavvResponse= 'Reserved for future use';
+			break;
+			case '7' :
+			$cavvResponse= 'CAVV attempt – failed validation – issuer available (U.S.- issued card/non-U.S acquirer)';
+			break;
+			case '8' :
+			$cavvResponse= 'CAVV attempt – passed validation – issuer available (U.S.- issued card/non-U.S. acquirer)';
+			break;
+			case '9' :
+			$cavvResponse= 'CAVV attempt – failed validation – issuer unavailable (U.S.- issued card/non-U.S. acquirer)';
+			break;
+			case 'A' :
+			$cavvResponse= 'CAVV attempt – passed validation – issuer unavailable (U.S.- issued card/non-U.S. acquirer)';
+			break;
+			case 'B' :
+			$cavvResponse= 'CAVV passed validation, information only, no liability shift';
+			break;
+			case '' :
+			$cavvResponse= 'Cardholder Authentication Verification Value(CAVV) not validated';
+			break;
+			}
+			$response=array('done'=>'0',
+			'error'=>$responseCode,
+			'cavvResponse'=>$cavvResponse,
+			'avsResponse'=>$avsresponse,
+			'ccResponse'=>$ccresponse,
+			'whole_responce'=>$authnet_response);
+			
+			return $response;
+			
+			
+			
+			
+			
+			
+			                        
         }
    
 	}
